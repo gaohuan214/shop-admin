@@ -17,6 +17,8 @@
 </template>
 
 <script>
+// 导入axios
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -38,7 +40,33 @@ export default {
   },
   methods: {
     login() {
-      console.log('submit!')
+      // 参数1: 校验结果(布尔值)   参数2: 未通过校验的字段
+      this.$refs.form.validate((valid, aa) => {
+        // console.log(valid, aa)
+        if (valid) {
+          // 发送ajax,后台验证
+          axios({
+            method: 'post',
+            url: 'http://localhost:8888/api/private/v1/login',
+            data: this.form
+          }).then(res => {
+            console.log(res.data)
+            if (res.data.meta.status === 200) {
+              // 登录成功
+              // $message
+              this.$message.success('登录成功')
+              // 路由跳转(编程式导航)
+              this.$router.push('/home')
+            } else {
+              this.$message({
+                type: 'error',
+                message: '用户名或密码错误',
+                duration: 1000
+              })
+            }
+          })
+        }
+      })
     },
     reset() {
       // resetFields 对整个表单进行重置,包括校验结果和图标
