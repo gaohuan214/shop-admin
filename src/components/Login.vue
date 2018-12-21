@@ -55,6 +55,8 @@ export default {
               // 登录成功
               // $message
               this.$message.success('登录成功')
+              // 设置token
+              localStorage.setItem('token', res.data.data.token)
               // 路由跳转(编程式导航)
               this.$router.push('/home')
             } else {
