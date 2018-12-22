@@ -9,8 +9,44 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px">Aside</el-aside>
-      <el-main>Main</el-main>
+      <el-aside width="200px">
+        <el-menu
+          class="el-menu-vertical-demo"
+          @open="handleOpen"
+          @close="handleClose"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          unique-opened
+          router
+        >
+          <el-submenu index="1">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>用户管理</span>
+            </template>
+            <!-- 菜单项 -->
+            <el-menu-item index="/users">
+              <i class="el-icon-menu"></i>
+              <span slot="title">用户列表</span>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>权限管理</span>
+            </template>
+            <el-menu-item index="2-1">
+              <i class="el-icon-menu"></i>
+              <span slot="title">导航四</span>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <!-- home的子路由的出口 -->
+        <router-view/>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -32,12 +68,14 @@ export default {
         .catch(() => {
           this.$message.info('取消退出')
         })
-    }
+    },
+    handleOpen() {},
+    handleClose() {}
   }
 }
 </script>
 
-<style lang = "less">
+<style lang = "less" scoped>
 .el-container {
   width: 100%;
   height: 100%;
@@ -66,10 +104,13 @@ export default {
     }
   }
   .el-aside {
-    background-color: blue;
+    .el-menu {
+      height: 100%;
+      width: 200px;
+    }
   }
   .el-main {
-    background-color: red;
+    background-color: #d4dfe4;
   }
 }
 </style>

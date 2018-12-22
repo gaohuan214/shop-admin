@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
+import User from '@/components/Users'
 
 Vue.use(Router)
 
@@ -17,7 +18,14 @@ const router = new Router({
     },
     {
       path: '/home',
-      component: Home
+      component: Home,
+      // children 用于适配home的子路由
+      children: [
+        {
+          path: '/users',
+          component: User
+        }
+      ]
     }
   ]
 })
