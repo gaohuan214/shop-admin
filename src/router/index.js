@@ -29,6 +29,7 @@ const router = new Router({
     }
   ]
 })
+// 导航守卫:路由发生变化时会触发beforeEach这个回调函数
 router.beforeEach((to, from, next) => {
   // console.log(to, from, next)
   if (to.path === '/login') {

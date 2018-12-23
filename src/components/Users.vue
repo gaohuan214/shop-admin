@@ -120,7 +120,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data() {
     return {
@@ -161,24 +160,24 @@ export default {
   },
   methods: {
     // 获取用户列表数据
-    getUserList() {
-      axios({
+    async getUserList() {
+      let res = await this.axios({
         method: 'get',
-        url: `http://localhost:8888/api/private/v1/users`,
+        url: `users`,
         params: {
           query: this.query,
           pagenum: this.currentPage,
           pagesize: this.pageSize
-        },
-        // 进行token认证
-        headers: { Authorization: localStorage.getItem('token') }
-      }).then(res => {
-        // console.log(res.data)
-        if (res.data.meta.status === 200) {
-          this.userlist = res.data.data.users
-          this.total = res.data.data.total
         }
       })
+      let {
+        meta: { status },
+        data: { users, total }
+      } = res
+      if (status === 200) {
+        this.userlist = users
+        this.total = total
+      }
     },
     // 每页显示数目改变时触发
     handleSizeChange(val) {
@@ -204,25 +203,27 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          axios({
+          return this.axios({
             method: 'delete',
-            url: `http://localhost:8888/api/private/v1/users/${id}`,
-            // 进行token认证
-            headers: { Authorization: localStorage.getItem('token') }
-          }).then(res => {
-            // console.log(res.data)
-            if (res.data.meta.status === 200) {
-              this.$message.success('删除成功')
-              console.log(this.userlist.length)
-              if (this.userlist.length === 1) {
-                // 如果当前页只有一条数据,删完这条数据后,渲染上一页
-                this.currentPage--
-              }
-              this.getUserList()
-            } else {
-              this.$message.error('删除失败')
-            }
+            url: `users/${id}`
           })
+        })
+        .then(res => {
+          // console.log(res)
+          let {
+            meta: { status }
+          } = res
+          if (status === 200) {
+            this.$message.success('删除成功')
+            // console.log(this.userlist.length)
+            if (this.userlist.length === 1) {
+              // 如果当前页只有一条数据,删完这条数据后,渲染上一页
+              this.currentPage--
+            }
+            this.getUserList()
+          } else {
+            this.$message.error('删除失败')
+          }
         })
         .catch(() => {
           this.$message.info('取消删除')
@@ -237,15 +238,16 @@ export default {
       this.$refs.addForm.validate(valid => {
         // console.log(valid)
         if (!valid) return
-        axios({
+        this.axios({
           method: 'post',
-          url: 'http://localhost:8888/api/private/v1/users',
-          data: this.addForm,
-          // 进行token认证
-          headers: { Authorization: localStorage.getItem('token') }
+          url: 'users',
+          data: this.addForm
         }).then(res => {
-          console.log(res.data)
-          if (res.data.meta.status === 201) {
+          // console.log(res)
+          let {
+            meta: { status }
+          } = res
+          if (status === 201) {
             // 添加成功
             // 1.关闭对话框
             this.addDialogVisible = false
@@ -275,20 +277,21 @@ export default {
     },
     // 修改用户信息
     editUser() {
-      console.log(this.editForm)
+      // console.log(this.editForm)
       //  1.进行表单校验
       this.$refs.editForm.validate(valid => {
         if (!valid) return
         //  2.发送ajax
-        axios({
+        this.axios({
           method: 'put',
-          url: `http://localhost:8888/api/private/v1/users/${this.editForm.id}`,
-          data: this.editForm,
-          // 进行token认证
-          headers: { Authorization: localStorage.getItem('token') }
+          url: `users/${this.editForm.id}`,
+          data: this.editForm
         }).then(res => {
-          // console.log(res.data)
-          if (res.data.meta.status === 200) {
+          // console.log(res)
+          let {
+            meta: { status, msg }
+          } = res
+          if (status === 200) {
             //  3.成功之后关闭对话框
             this.editDialogVisible = false
             //  4.重置表单
@@ -298,32 +301,27 @@ export default {
             // 6.重新渲染
             this.getUserList()
           } else {
-            this.$message.error(res.data.meta.msg)
+            this.$message.error(msg)
           }
         })
       })
     },
     // 更改用户状态
-    updataStatus(user) {
+    async updataStatus(user) {
       // console.log(user)
-      axios({
+      let res = await this.axios({
         method: 'put',
-        url: `http://localhost:8888/api/private/v1/users/${user.id}/state/${
-          user.mg_state
-        }`,
-        // 进行token认证
-        headers: { Authorization: localStorage.getItem('token') }
-      }).then(res => {
-        // console.log(res.data)
-        if (res.data.meta.status === 200) {
-          this.$message.success('状态修改成功')
-        } else {
-          this.$message.error(res.data.meta.msg)
-        }
+        url: `users/${user.id}/state/${user.mg_state}`
       })
+      // console.log(res.data)
+      if (res.meta.status === 200) {
+        this.$message.success('状态修改成功')
+      } else {
+        this.$message.error(res.meta.msg)
+      }
     }
   },
-
+  // user页面打开时渲染
   created() {
     this.getUserList()
   }

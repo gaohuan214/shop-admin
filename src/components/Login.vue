@@ -23,7 +23,7 @@
 
 <script>
 // 导入axios
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data() {
     return {
@@ -50,13 +50,13 @@ export default {
         // console.log(valid, aa)
         if (valid) {
           // 发送ajax,后台验证
-          axios({
+          this.axios({
             method: 'post',
-            url: 'http://localhost:8888/api/private/v1/login',
+            url: 'login',
             data: this.form
           }).then(res => {
-            console.log(res.data)
-            if (res.data.meta.status === 200) {
+            // console.log(res)
+            if (res.meta.status === 200) {
               // 登录成功
               // $message
               this.$message.success('登录成功')
