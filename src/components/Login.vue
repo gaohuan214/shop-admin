@@ -46,31 +46,28 @@ export default {
   methods: {
     login() {
       // 参数1: 校验结果(布尔值)   参数2: 未通过校验的字段
-      this.$refs.form.validate((valid, aa) => {
+      this.$refs.form.validate(async valid => {
         // console.log(valid, aa)
-        if (valid) {
-          // 发送ajax,后台验证
-          this.axios({
-            method: 'post',
-            url: 'login',
-            data: this.form
-          }).then(res => {
-            // console.log(res)
-            if (res.meta.status === 200) {
-              // 登录成功
-              // $message
-              this.$message.success('登录成功')
-              // 设置token
-              localStorage.setItem('token', res.data.data.token)
-              // 路由跳转(编程式导航)
-              this.$router.push('/home')
-            } else {
-              this.$message({
-                type: 'error',
-                message: '用户名或密码错误',
-                duration: 1000
-              })
-            }
+        if (!valid) return false
+        // 发送ajax,后台验证
+        let res = await this.axios({
+          method: 'post',
+          url: 'login',
+          data: this.form
+        })
+        // console.log(res)
+        if (res.meta.status === 200) {
+          // 登录成功
+          this.$message.success('登录成功')
+          // 设置token
+          localStorage.setItem('token', res.data.token)
+          // 路由跳转(编程式导航)
+          this.$router.push('/home')
+        } else {
+          this.$message({
+            type: 'error',
+            message: '用户名或密码错误',
+            duration: 1000
           })
         }
       })

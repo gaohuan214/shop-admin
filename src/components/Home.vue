@@ -11,9 +11,8 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
+          default-active="1"
           class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
@@ -36,9 +35,13 @@
               <i class="el-icon-location"></i>
               <span>权限管理</span>
             </template>
-            <el-menu-item index="2-1">
+            <el-menu-item index="/roles">
               <i class="el-icon-menu"></i>
-              <span slot="title">导航四</span>
+              <span slot="title">角色列表</span>
+            </el-menu-item>
+            <el-menu-item index="rights">
+              <i class="el-icon-menu"></i>
+              <span slot="title">权限列表</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -68,9 +71,7 @@ export default {
         .catch(() => {
           this.$message.info('取消退出')
         })
-    },
-    handleOpen() {},
-    handleClose() {}
+    }
   }
 }
 </script>
