@@ -3,6 +3,8 @@
 import Vue from 'vue'
 // 导入axios
 import axios from 'axios'
+// 引入moment插件
+import moment from 'moment'
 import App from './App'
 import router from './router'
 // 导入element-ui
@@ -19,6 +21,8 @@ Vue.component('el-table-tree-column', ElTreeGrid)
 Vue.use(ElementUI)
 // 将axios绑定到Vue的原型上
 Vue.prototype.axios = axios
+// moment绑定到Vue的原型上
+Vue.prototype.moment = moment
 // 设置全局axios的baseURL(全局设置一般默认定死,不会更改的)
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 Vue.config.productionTip = false
