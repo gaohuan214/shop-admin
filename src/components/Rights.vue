@@ -33,7 +33,7 @@ export default {
   methods: {
     async getRightsList() {
       let res = await this.axios.get('rights/list')
-      console.log(res)
+      // console.log(res)
       let {
         meta: { status },
         data

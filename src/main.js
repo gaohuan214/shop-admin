@@ -10,6 +10,11 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 导入通用样式
 import '@/assets/base.less'
+// 引入element-tree-grid
+import ElTreeGrid from 'element-tree-grid'
+//
+// console.log(ElTreeGrid)
+Vue.component('el-table-tree-column', ElTreeGrid)
 // 使用element-ui
 Vue.use(ElementUI)
 // 将axios绑定到Vue的原型上

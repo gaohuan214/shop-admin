@@ -58,7 +58,13 @@
             icon="el-icon-delete"
             circle
           ></el-button>
-          <el-button size="small" plain type="success" icon="el-icon-check">分配角色</el-button>
+          <el-button
+            size="small"
+            plain
+            type="success"
+            @click="showAssignDialog(scope.row)"
+            icon="el-icon-check"
+          >分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -116,6 +122,24 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="assignDialogVisible" width="40%">
+      <!-- 修改用户的信息列表 -->
+      <el-form :model="assigntForm" label-width="80px" status-icon ref="assigntForm">
+        <el-form-item label="用户名">
+          <el-tag type="info">{{assigntForm.username}}</el-tag>
+        </el-form-item>
+        <el-form-item label="角色列表" prop="rid">
+          <el-select v-model="assigntForm.rid" placeholder="请选择">
+            <el-option v-for="role in roles" :key="role.id" :label="role.roleName" :value="role.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="assignDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="assignRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -155,7 +179,18 @@ export default {
         mobile: [
           { pattern: /^1\d{10}$/, message: '手机格式不正确', trigger: 'blur' }
         ]
-      }
+      },
+      // 分配角色的
+      assignDialogVisible: false,
+      assigntForm: {
+        username: '',
+        // 用户id
+        id: '',
+        // 角色id
+        rid: ''
+      },
+      // 角色列表
+      roles: []
     }
   },
   methods: {
@@ -318,6 +353,68 @@ export default {
         this.$message.success('状态修改成功')
       } else {
         this.$message.error(res.meta.msg)
+      }
+    },
+    // 提供一个根据用户id,查询 用户角色id 的方法
+    async getRoleId(id) {
+      let res = await this.axios.get(`users/${id}`)
+      let {
+        meta: { status },
+        data
+      } = res
+      // console.log(res)
+      if (status === 200) {
+        let rid = data.rid
+        if (rid === -1) {
+          rid = ''
+        }
+        this.assigntForm.rid = rid
+      } else {
+        this.$message.error('获取用户角色id失败')
+      }
+    },
+    // 显示用户分配角色的对话框(涉及回显)
+    async showAssignDialog(user) {
+      // 用户信息
+      // console.log(user)
+      this.assignDialogVisible = true
+      this.assigntForm.username = user.username
+      this.assigntForm.id = user.id
+      // 发送ajax获取角色列表
+      let res = await this.axios.get('roles')
+      let {
+        meta: { status },
+        data
+      } = res
+      // console.log(res)
+      if (status === 200) {
+        this.roles = data
+        // 获取用户角色id
+        this.getRoleId(user.id)
+      } else {
+        this.$message.error('分配失败')
+      }
+    },
+    // 分配角色
+    async assignRole() {
+      // 表单校验
+      console.log(this.assigntForm.rid)
+      if (!this.assigntForm.rid) {
+        this.$message.error('请选择一个角色')
+        return
+      }
+      let res = await this.axios.put(`users/${this.assigntForm.id}/role`, {
+        rid: this.assigntForm.rid
+      })
+      let {
+        meta: { status }
+      } = res
+      // console.log(res)
+      if (status === 200) {
+        this.$message.success('分配角色成功')
+        this.assignDialogVisible = false
+      } else {
+        this.$message.error('分配角色失败')
       }
     }
   },
