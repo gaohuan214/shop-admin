@@ -12,17 +12,24 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 导入通用样式
 import '@/assets/base.less'
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 // 引入element-tree-grid
 import ElTreeGrid from 'element-tree-grid'
-//
 // console.log(ElTreeGrid)
 Vue.component('el-table-tree-column', ElTreeGrid)
 // 使用element-ui
 Vue.use(ElementUI)
 // 将axios绑定到Vue的原型上
 Vue.prototype.axios = axios
-// moment绑定到Vue的原型上
-Vue.prototype.moment = moment
+// 定义一个全局过滤器
+Vue.filter('formatTime', (input, format = 'YYYY-MM-DD HH:mm:ss') => {
+  return moment(input * 1000).format(format)
+})
+// 使用vue-quill-editor
+Vue.use(VueQuillEditor)
 // 设置全局axios的baseURL(全局设置一般默认定死,不会更改的)
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 Vue.config.productionTip = false
